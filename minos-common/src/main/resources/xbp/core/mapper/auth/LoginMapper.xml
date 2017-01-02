@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="xbp.core.mapper.auth.LoginMapper">
+
+	<resultMap id="UserModelResult"  type="UserModel" >
+		<result property="rowId" column="T0_ROW_ID" jdbcType="INTEGER" />
+		<result property="sortNbr" column="T0_SORT_NBR" jdbcType="INTEGER" />
+		<result property="status" column="T0_STATUS" jdbcType="CHAR" />
+		<result property="deletedFlag" column="T0_DELETED_FLAG" jdbcType="CHAR" />
+		<result property="originFlag" column="T0_ORIGIN_FLAG" jdbcType="CHAR" />
+		<result property="originApp" column="T0_ORIGIN_APP" jdbcType="VARCHAR" />
+		<result property="notes" column="T0_NOTES" jdbcType="VARCHAR" />
+		<result property="companyCode" column="T0_COMPANY_CODE" jdbcType="VARCHAR" />
+		<result property="userName" column="T0_USER_NAME" jdbcType="VARCHAR" />
+		<result property="nickName" column="T0_NICK_NAME" jdbcType="VARCHAR" />
+		<result property="password" column="T0_PASSWORD" jdbcType="VARCHAR" />
+		<result property="resetKey" column="T0_RESET_KEY" jdbcType="VARCHAR" />
+		<result property="userType" column="T0_USER_TYPE" jdbcType="VARCHAR" />
+		<result property="employeeId" column="T0_EMPLOYEE_ID" jdbcType="INTEGER" />
+		<result property="moduleId" column="T0_MODULE_ID" jdbcType="INTEGER" />
+		<result property="isInitPw" column="T0_IS_INIT_PW" jdbcType="CHAR" />
+	</resultMap>
+	
+	<resultMap id="CompanyModelResult"  type="CompanyModel" >
+		<result property="rowId" column="ROW_ID" jdbcType="INTEGER" />
+		<result property="sortNbr" column="SORT_NBR" jdbcType="INTEGER" />
+		<result property="status" column="STATUS" jdbcType="CHAR" />
+		<result property="deletedFlag" column="DELETED_FLAG" jdbcType="CHAR" />
+		<result property="originFlag" column="ORIGIN_FLAG" jdbcType="CHAR" />
+		<result property="originApp" column="ORIGIN_APP" jdbcType="VARCHAR" />
+		<result property="notes" column="NOTES" jdbcType="VARCHAR" />
+		<result property="companyMark" column="COMPANY_MARK" jdbcType="VARCHAR" />
+		<result property="companyCode" column="COMPANY_CODE" jdbcType="VARCHAR" />
+		<result property="companyName" column="COMPANY_NAME" jdbcType="VARCHAR" />
+		<result property="sortName" column="SORT_NAME" jdbcType="VARCHAR" />
+		<result property="companyNameEn" column="COMPANY_NAME_EN" jdbcType="VARCHAR" />
+		<result property="isBloc" column="IS_BLOC" jdbcType="VARCHAR" />
+		<result property="supCompanyId" column="SUP_COMPANY_ID" jdbcType="INTEGER" />
+		<result property="companyClass" column="COMPANY_CLASS" jdbcType="VARCHAR" />
+		<result property="companyType" column="COMPANY_TYPE" jdbcType="VARCHAR" />
+		<result property="cussupType" column="CUSSUP_TYPE" jdbcType="CHAR" />
+		<result property="companyScale" column="COMPANY_SCALE" jdbcType="VARCHAR" />
+		<result property="traceSource" column="TRACE_SOURCE" jdbcType="VARCHAR" />
+		<result property="tracePeople" column="TRACE_PEOPLE" jdbcType="VARCHAR" />
+		<result property="tpCell" column="TP_CELL" jdbcType="VARCHAR" />
+		<result property="logo" column="LOGO" jdbcType="LONGVARCHAR" />
+		<result property="province" column="PROVINCE" jdbcType="VARCHAR" />
+		<result property="city" column="CITY" jdbcType="VARCHAR" />
+		<result property="county" column="COUNTY" jdbcType="VARCHAR" />
+		<result property="companyAddress" column="COMPANY_ADDRESS" jdbcType="VARCHAR" />
+		<result property="idCard" column="ID_CARD" jdbcType="VARCHAR" />
+		<result property="companyPhoto" column="COMPANY_PHOTO" jdbcType="LONGVARCHAR" />
+		<result property="longitude" column="LONGITUDE" jdbcType="DECIMAL" />
+		<result property="latitude" column="LATITUDE" jdbcType="DECIMAL" />
+		<result property="area" column="AREA" jdbcType="DECIMAL" />
+		<result property="registerTime" column="REGISTER_TIME" jdbcType="TIMESTAMP" />
+		<result property="registerIp" column="REGISTER_IP" jdbcType="VARCHAR" />
+		<result property="openTime" column="OPEN_TIME" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="LoginUserViewResult" type="LoginUserView" >
+		<collection property="userModel" javaType="UserModel" resultMap="UserModelResult" />
+		<collection property="companyModel" javaType="CompanyModel" resultMap="CompanyModelResult" />
+	</resultMap>
+	
+	<!--根据用户名和公司编码登录  -->
+	<select id="searchUserForLogin"  resultMap="LoginUserViewResult">
+		SELECT
+		T0.ROW_ID AS T0_ROW_ID ,
+		T0.COMPANY_CODE AS T0_COMPANY_CODE,
+		T0.NICK_NAME AS T0_NICK_NAME ,
+		T0.USER_NAME AS T0_USER_NAME ,
+		T0.`PASSWORD` AS T0_PASSWORD ,
+		T0.USER_TYPE AS T0_USER_TYPE ,
+		T0.EMPLOYEE_ID AS T0_EMPLOYEE_ID ,
+		T0.IS_INIT_PW AS T0_IS_INIT_PW ,
+		T1.COMPANY_NAME ,
+		T1.SUP_COMPANY_ID,
+		T1.ROW_ID,
+		T1.COMPANY_CODE,
+		T1.SORT_NAME,
+		T1.COMPANY_NAME_EN,
+		T1.IS_BLOC,
+		T1.COMPANY_CLASS,
+		T1.COMPANY_TYPE,
+		T1.COMPANY_MARK
+		FROM
+		hr_m_user T0
+		INNER JOIN hr_m_company T1 
+		ON T0.`COMPANY_CODE` = T1.`COMPANY_CODE` 
+		AND T1.DELETED_FLAG = '0' 
+		WHERE T1.COMPANY_CODE = #{companyCode,jdbcType=VARCHAR} 
+		AND T0.USER_NAME = #{userName,jdbcType=VARCHAR} 
+		AND T0.DELETED_FLAG = 0 
+	</select>
+	
+	<!-- 修改密码 -->
+	<update id="editPassword" >
+		UPDATE hr_m_user SET PASSWORD=#{password},IS_INIT_PW='N' where ROW_ID=#{rowId} 
+	</update>
+
+</mapper>
+

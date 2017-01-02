@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="xbp.core.mapper.auth.QuickMenusMapper">
+
+	<resultMap id="QuickMenusResult"  type="QuickMenusModel" >
+		<result property="rowId" column="ROW_ID" jdbcType="INTEGER" />
+		<result property="sortNbr" column="SORT_NBR" jdbcType="INTEGER" />
+		<result property="status" column="STATUS" jdbcType="CHAR" />
+		<result property="deletedFlag" column="DELETED_FLAG" jdbcType="CHAR" />
+		<result property="notes" column="NOTES" jdbcType="VARCHAR" />
+		<result property="farmId" column="FARM_ID" jdbcType="INTEGER" />
+		<result property="companyId" column="COMPANY_ID" jdbcType="INTEGER" />
+		<result property="userId" column="USER_ID" jdbcType="INTEGER" />
+		<result property="moduleId" column="MODULE_ID" jdbcType="INTEGER" />
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="QuickMenusModel_Column_List">
+		ROW_ID,SORT_NBR,NOTES,USER_ID,MODULE_ID
+	</sql>
+
+	<!-- 单条新增 -->
+	<insert id="insert" useGeneratedKeys="true"   keyProperty="rowId" parameterType="QuickMenusModel">
+		INSERT INTO CD_L_QUICK_MENUS
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			SORT_NBR,
+			STATUS,
+			DELETED_FLAG,
+			NOTES,
+			FARM_ID,
+			COMPANY_ID,
+			USER_ID,
+			MODULE_ID
+		</trim>
+		VALUES
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{ sortNbr,jdbcType=INTEGER},
+			#{ status,jdbcType=CHAR},
+			#{ deletedFlag,jdbcType=CHAR},
+			#{ notes,jdbcType=VARCHAR},
+			#{ farmId,jdbcType=INTEGER},
+			#{ companyId,jdbcType=INTEGER},
+			#{ userId,jdbcType=INTEGER},
+			#{ moduleId,jdbcType=INTEGER}
+		</trim>
+	</insert>
+	
+	<!-- 批量新增 -->
+	<insert id="inserts" parameterType="java.util.List">
+		INSERT INTO CD_L_QUICK_MENUS
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			SORT_NBR ,
+			STATUS ,
+			DELETED_FLAG ,
+			NOTES ,
+			FARM_ID ,
+			COMPANY_ID ,
+			USER_ID ,
+			MODULE_ID 
+		</trim>
+		VALUES
+		<foreach collection="records" item="item" index="index"  separator="," >	
+			<trim prefix="(" suffix=")" suffixOverrides=",">		
+				#{item.sortNbr,jdbcType=INTEGER},
+				#{item.status,jdbcType=CHAR},
+				#{item.deletedFlag,jdbcType=CHAR},
+				#{item.notes,jdbcType=VARCHAR},
+				#{item.farmId,jdbcType=INTEGER},
+				#{item.companyId,jdbcType=INTEGER},
+				#{item.userId,jdbcType=INTEGER},
+				#{item.moduleId,jdbcType=INTEGER}
+			</trim>
+		</foreach>			
+	</insert>
+	
+	<!--单条更新 -->
+	<update id="update" parameterType="QuickMenusModel" >
+		UPDATE CD_L_QUICK_MENUS 
+		<set>
+		<if test="sortNbr != null">SORT_NBR = #{ sortNbr,jdbcType=INTEGER},</if>
+		<if test="status != null">STATUS = #{ status,jdbcType=CHAR},</if>
+		<if test="notes != null">NOTES = #{ notes,jdbcType=VARCHAR},</if>
+		<if test="userId != null">USER_ID = #{ userId,jdbcType=INTEGER},</if>
+		<if test="moduleId != null">MODULE_ID = #{ moduleId,jdbcType=INTEGER}</if>
+		</set>
+		WHERE
+		ROW_ID = #{ rowId,jdbcType=INTEGER}
+	</update>
+	
+	<!--批量更新 -->
+	<update id="updates" parameterType="java.util.List">
+		<foreach collection="records" item="item" index="index" open="" close="" separator=";">	
+			UPDATE CD_L_QUICK_MENUS 
+			<set>
+			<if test="item.sortNbr != null">SORT_NBR = #{item.sortNbr,jdbcType=INTEGER},</if>
+			<if test="item.status != null">STATUS = #{item.status,jdbcType=CHAR},</if>
+			<if test="item.notes != null">NOTES = #{item.notes,jdbcType=VARCHAR},</if>
+			<if test="item.userId != null">USER_ID = #{item.userId,jdbcType=INTEGER},</if>
+			<if test="item.moduleId != null">MODULE_ID = #{item.moduleId,jdbcType=INTEGER}</if>
+			</set>
+			WHERE
+			ROW_ID = #{item.rowId,jdbcType=INTEGER}	
+		</foreach>
+	</update>
+	
+	<!--单条删除 -->
+	<update id="delete" >
+		UPDATE  CD_L_QUICK_MENUS
+		SET
+		DELETED_FLAG =  '1'
+		WHERE 
+		ROW_ID = #{ rowId,jdbcType=INTEGER}
+	</update>
+	
+	<!--批量删除 -->
+	<update id="deletes" >
+		<foreach item="item" index="index" collection="ids" open=""  close="" separator=";">
+		 UPDATE  CD_L_QUICK_MENUS
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE 
+		 ROW_ID =#{item}
+        </foreach>	
+	</update>
+	
+	<!--根据条件批量删除 -->
+	<update id="deletesByCon" parameterType="java.util.List" >
+		<foreach item="item" index="index" collection="records" open=""  close="" separator=";">
+		 UPDATE  CD_L_QUICK_MENUS
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE DELETED_FLAG  =  '0' 
+		 AND FARM_ID=#{ farmId,jdbcType=INTEGER}
+		 AND ${item.RECORD_CON} = #{item.RECORD_VALUES}
+		 </foreach>	
+	</update>
+	
+	<!--根据条件批量删除 -->
+	<update id="deletesByCons" parameterType="java.util.List" >
+		<foreach item="item" index="index" collection="records" open=""  close="" separator=";">
+		 UPDATE  CD_L_QUICK_MENUS
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE DELETED_FLAG  =  '0' ${item}
+		</foreach>	
+	</update>
+	
+	<!--查询List记录 -->
+	<select id="searchToList" resultMap="QuickMenusResult">
+		SELECT 
+		<include refid="QuickMenusModel_Column_List" />
+		FROM CD_L_QUICK_MENUS WHERE DELETED_FLAG='0' 
+		AND FARM_ID=#{ farmId,jdbcType=INTEGER}
+	</select>
+	
+	<!--查询根据主键查单条记录 -->
+	<select id="searchById" resultMap="QuickMenusResult" >
+		SELECT 
+		<include refid="QuickMenusModel_Column_List" />
+		FROM CD_L_QUICK_MENUS WHERE DELETED_FLAG='0'  AND
+		ROW_ID = #{ rowId,jdbcType=INTEGER}
+	</select>
+	
+	<!--根据条件查询有效数据 --><!-- {condition} -->
+	<select id="searchListByCon" resultMap="QuickMenusResult" >
+		SELECT 
+		<include refid="QuickMenusModel_Column_List" />
+		FROM CD_L_QUICK_MENUS
+		WHERE DELETED_FLAG='0'  ${condition} 
+	</select>
+	
+	<!--根据条件查询全部数据 --><!-- {condition} -->
+	<select id="searchAllListByCon" resultMap="QuickMenusResult" >
+		SELECT 
+		<include refid="QuickMenusModel_Column_List" />
+		FROM CD_L_QUICK_MENUS
+		WHERE ${condition}
+	</select>
+	
+	<!--根据条件查询全部数据 --><!-- {condition} -->
+	<select id="searchAll" resultMap="QuickMenusResult" >
+		SELECT *
+		FROM CD_L_QUICK_MENUS
+		WHERE ${condition}
+	</select>
+	
+	<!-- 直接sql操作 -->
+	<select id="operSql" resultMap="QuickMenusResult"> ${sql} </select>
+
+</mapper>
+

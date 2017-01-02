@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="xbp.core.mapper.base.ParamMapper">
+	<resultMap id="MenuResult"  type="MenuView" >
+		<result property="parentId" column="PARENT_ID" jdbcType="INTEGER" />
+		<result property="menuType" column="MENU_TYPE" jdbcType="VARCHAR" />
+		<result property="moduleCode" column="MODULE_CODE" jdbcType="VARCHAR" />
+		<result property="moduleEnNa" column="MODULE_EN_NA" jdbcType="VARCHAR" />
+		<result property="sortEnNa" column="SORT_EN_NA" jdbcType="VARCHAR" />
+		<result property="moduleId" column="MODULE_ID" jdbcType="INTEGER" />
+		<result property="levelNum" column="LEVEL_NUM" jdbcType="INTEGER" />
+		<result property="moduleName" column="MODULE_NAME" jdbcType="VARCHAR" />
+		<result property="moduleUrl" column="MODULE_URL" jdbcType="VARCHAR" />
+		<result property="glyph" column="GLYPH" jdbcType="VARCHAR" />
+		<result property="iconCls" column="ICON_CLS" jdbcType="VARCHAR" />
+		<result property="clickEvent" column="CLICK_EVENT" jdbcType="VARCHAR" />
+		<result property="component" column="COMPONENT" jdbcType="VARCHAR" />
+		<result property="isQuickMenu" column="IS_QUICK_MENU" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="QuickMenusViewResult"  type="QuickMenusView" >
+		<result property="rowId" column="ROW_ID" jdbcType="INTEGER" />
+		<result property="sortNbr" column="SORT_NBR" jdbcType="INTEGER" />
+		<result property="status" column="STATUS" jdbcType="CHAR" />
+		<result property="deletedFlag" column="DELETED_FLAG" jdbcType="CHAR" />
+		<result property="notes" column="NOTES" jdbcType="VARCHAR" />
+		<result property="farmId" column="FARM_ID" jdbcType="INTEGER" />
+		<result property="companyId" column="COMPANY_ID" jdbcType="INTEGER" />
+		<result property="userId" column="USER_ID" jdbcType="INTEGER" />
+		<result property="moduleId" column="MODULE_ID" jdbcType="INTEGER" />
+		<result property="component" column="COMPONENT" jdbcType="VARCHAR" />
+		<result property="moduleName" column="MODULE_NAME" jdbcType="VARCHAR" />
+		<result property="moduleUrl" column="MODULE_URL" jdbcType="VARCHAR" />
+		<result property="iconCls" column="ICON_CLS" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="isExist" resultType="long">
+	<![CDATA[ 
+		SELECT count(*)
+		FROM ${tableName} as p
+		WHERE p.DELETED_FLAG=0
+		]]>
+		<foreach collection="paramModel" item="item" index="index" >  
+		<![CDATA[ AND p.${item.columnName} = TRIM(BOTH ' ' FROM '${item.field}')]]>
+    	</foreach>  
+    
+		<if test="rowId != null ">
+			<![CDATA[ AND p.ROW_ID <> '${rowId}']]>
+		</if>
+	</select>
+	
+	<update id="getBCode" statementType="CALLABLE">
+		CALL P_CreateBcodeFactory(
+			#{pmsMap.typeCode,jdbcType=VARCHAR},
+			#{pmsMap.companyId,jdbcType=INTEGER},
+			#{pmsMap.farmId,jdbcType=INTEGER},
+			#{pmsMap.createId,jdbcType=INTEGER},
+			#{pmsMap.bcode,mode=OUT,jdbcType=VARCHAR},
+			#{pmsMap.errorCode,mode=OUT,jdbcType=VARCHAR},
+			#{pmsMap.errorMessage,mode=OUT,jdbcType=VARCHAR}
+		);
+	</update>
+	<select id="getSettingValueByCode" resultType="String">
+		SELECT _getSettingValueByCode(#{farmId},#{settingCode})
+	</select>
+	
+	<select id="getInfos" resultType="java.util.HashMap">
+		${sql}
+	</select>
+	
+	<select id="getInfosByList" resultType="java.util.HashMap">
+		<foreach collection="list" item="item" index="index" separator="UNION ALL" >  
+			${item}
+		</foreach>
+	</select>
+	
+	<select id="getObjectInfos" resultType="java.util.HashMap">
+		${sql}
+	</select>
+	
+	<select id="getObjectInfosByList" resultType="java.util.HashMap">
+		<foreach collection="list" item="item" index="index" separator="UNION ALL" >  
+			${item}
+		</foreach>
+	</select>
+	
+	
+	<select id="getSeq" parameterType="String"  resultType="long">
+		SELECT _getNextval(#{seq_name}) FROM DUAL
+	</select>
+	
+		<!-- 根据用户ID查询快捷菜单 -->
+	<select id="searchQuickMenusByUserId" resultMap="QuickMenusViewResult" >
+		 <![CDATA[
+		 SELECT  T.ROW_ID,T.SORT_NBR,T.FARM_ID,T.COMPANY_ID,T.USER_ID,T.MODULE_ID,T1.COMPONENT,    
+		 T1.MODULE_NAME,T1.MODULE_URL,T1.ICON_CLS    FROM CD_L_QUICK_MENUS T 
+		 INNER JOIN CD_O_MODULE T1 ON T.MODULE_ID=T1.ROW_ID AND T1.DELETED_FLAG='0' AND T1.STATUS='1' 
+		 WHERE T.DELETED_FLAG='0' AND T.STATUS='1' AND T.USER_ID= #{userId} 
+		 ]]>
+	 </select>   
+	 
+	  <select id="searchMenuByUserId" resultMap="MenuResult" >
+		 <![CDATA[
+				SELECT  DISTINCT T3.MODULE_ID,T3.LEVEL_NUM,T3.PARENT_ID,T4.MODULE_NAME,T4.MODULE_URL,T4.GLYPH,T4.ICON_CLS,T4.CLICK_EVENT,T4.COMPONENT
+				,T4.IS_QUICK_MENU
+				FROM cd_r_employee_role T0 
+				INNER JOIN cd_o_role T1
+				ON T0.ROLE_ID = T1.ROW_ID AND T1.DELETED_FLAG = '0' AND T1.STATUS = '1'
+				INNER JOIN cd_r_limit T2
+				ON T1.ROW_ID = T2.ROLE_ID AND T2.DELETED_FLAG = '0' AND T2.STATUS = '1'
+				INNER JOIN cd_r_menus T3
+				ON T3.TEMPLATE_ID = T1.TEMPLATE_ID AND T3.DELETED_FLAG = '0' AND T3.STATUS = '1'  AND T2.OBJ_ID = T3.MODULE_ID AND T2.OBJ_TYPE = 'URL'
+				INNER JOIN cd_o_module T4
+				ON T3.MODULE_ID = T4.ROW_ID AND T4.DELETED_FLAG = '0' AND T4.STATUS = '1'
+				WHERE T0.EMPLOYEE_ID = #{employeeId} AND T0.DELETED_FLAG = '0' AND T0.STATUS = '1'
+				AND T1.FARM_ID = #{farmId} ]]>
+	 </select>    
+	 
+	 <select id="searchMenuByTemplateId" resultMap="MenuResult" >
+		 <![CDATA[
+			SELECT DISTINCT T1.MODULE_ID,T1.LEVEL_NUM,T1.PARENT_ID,T2.MODULE_NAME,T2.MODULE_URL,T2.GLYPH,T2.ICON_CLS,T2.CLICK_EVENT,T2.COMPONENT 
+			,T2.IS_QUICK_MENU
+			FROM cd_r_menus T1
+			INNER JOIN cd_o_module T2 ON T1.MODULE_ID = T2.ROW_ID AND T2.DELETED_FLAG = '0' AND T2.STATUS = '1'
+			WHERE T1.DELETED_FLAG = '0' AND T1.STATUS = '1' AND T1.TEMPLATE_ID= #{templateId} 
+			]]>
+	 </select>   
+</mapper>
+

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="xbp.core.mapper.organization.PostMapper">
+
+	<resultMap id="PostResult"  type="PostModel" >
+		<result property="rowId" column="ROW_ID" jdbcType="INTEGER" />
+		<result property="sortNbr" column="SORT_NBR" jdbcType="INTEGER" />
+		<result property="status" column="STATUS" jdbcType="CHAR" />
+		<result property="deletedFlag" column="DELETED_FLAG" jdbcType="CHAR" />
+		<result property="originFlag" column="ORIGIN_FLAG" jdbcType="CHAR" />
+		<result property="originApp" column="ORIGIN_APP" jdbcType="VARCHAR" />
+		<result property="notes" column="NOTES" jdbcType="VARCHAR" />
+		<result property="farmId" column="FARM_ID" jdbcType="INTEGER" />
+		<result property="companyId" column="COMPANY_ID" jdbcType="INTEGER" />
+		<result property="deptId" column="DEPT_ID" jdbcType="INTEGER" />
+		<result property="duty" column="DUTY" jdbcType="VARCHAR" />
+		<result property="jobTitle" column="JOB_TITLE" jdbcType="VARCHAR" />
+		<result property="dutyLvl" column="DUTY_LVL" jdbcType="VARCHAR" />
+		<result property="qualification" column="QUALIFICATION" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="PostModel_Column_List">
+		ROW_ID,SORT_NBR,NOTES,DEPT_ID,DUTY,JOB_TITLE,DUTY_LVL,QUALIFICATION
+	</sql>
+
+	<!-- 单条新增 -->
+	<insert id="insert" useGeneratedKeys="true"   keyProperty="rowId" parameterType="PostModel">
+		INSERT INTO HR_O_POST
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			SORT_NBR,
+			STATUS,
+			DELETED_FLAG,
+			ORIGIN_FLAG,
+			ORIGIN_APP,
+			NOTES,
+			FARM_ID,
+			COMPANY_ID,
+			DEPT_ID,
+			DUTY,
+			JOB_TITLE,
+			DUTY_LVL,
+			QUALIFICATION
+		</trim>
+		VALUES
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{ sortNbr,jdbcType=INTEGER},
+			#{ status,jdbcType=CHAR},
+			#{ deletedFlag,jdbcType=CHAR},
+			#{ originFlag,jdbcType=CHAR},
+			#{ originApp,jdbcType=VARCHAR},
+			#{ notes,jdbcType=VARCHAR},
+			#{ farmId,jdbcType=INTEGER},
+			#{ companyId,jdbcType=INTEGER},
+			#{ deptId,jdbcType=INTEGER},
+			#{ duty,jdbcType=VARCHAR},
+			#{ jobTitle,jdbcType=VARCHAR},
+			#{ dutyLvl,jdbcType=VARCHAR},
+			#{ qualification,jdbcType=VARCHAR}
+		</trim>
+	</insert>
+	
+	<!-- 批量新增 -->
+	<insert id="inserts" parameterType="java.util.List">
+		INSERT INTO HR_O_POST
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			SORT_NBR ,
+			STATUS ,
+			DELETED_FLAG ,
+			ORIGIN_FLAG ,
+			ORIGIN_APP ,
+			NOTES ,
+			FARM_ID ,
+			COMPANY_ID ,
+			DEPT_ID ,
+			DUTY ,
+			JOB_TITLE ,
+			DUTY_LVL ,
+			QUALIFICATION 
+		</trim>
+		VALUES
+		<foreach collection="records" item="item" index="index"  separator="," >	
+			<trim prefix="(" suffix=")" suffixOverrides=",">		
+				#{item.sortNbr,jdbcType=INTEGER},
+				#{item.status,jdbcType=CHAR},
+				#{item.deletedFlag,jdbcType=CHAR},
+				#{item.originFlag,jdbcType=CHAR},
+				#{item.originApp,jdbcType=VARCHAR},
+				#{item.notes,jdbcType=VARCHAR},
+				#{item.farmId,jdbcType=INTEGER},
+				#{item.companyId,jdbcType=INTEGER},
+				#{item.deptId,jdbcType=INTEGER},
+				#{item.duty,jdbcType=VARCHAR},
+				#{item.jobTitle,jdbcType=VARCHAR},
+				#{item.dutyLvl,jdbcType=VARCHAR},
+				#{item.qualification,jdbcType=VARCHAR}
+			</trim>
+		</foreach>			
+	</insert>
+	
+	<!--单条更新 -->
+	<update id="update" parameterType="PostModel" >
+		UPDATE HR_O_POST 
+		<set>
+		<if test="sortNbr != null">SORT_NBR = #{ sortNbr,jdbcType=INTEGER},</if>
+		<if test="status != null">STATUS = #{ status,jdbcType=CHAR},</if>
+		<if test="originFlag != null">ORIGIN_FLAG = #{ originFlag,jdbcType=CHAR},</if>
+		<if test="originApp != null">ORIGIN_APP = #{ originApp,jdbcType=VARCHAR},</if>
+		<if test="notes != null">NOTES = #{ notes,jdbcType=VARCHAR},</if>
+		<if test="deptId != null">DEPT_ID = #{ deptId,jdbcType=INTEGER},</if>
+		<if test="duty != null">DUTY = #{ duty,jdbcType=VARCHAR},</if>
+		<if test="jobTitle != null">JOB_TITLE = #{ jobTitle,jdbcType=VARCHAR},</if>
+		<if test="dutyLvl != null">DUTY_LVL = #{ dutyLvl,jdbcType=VARCHAR},</if>
+		<if test="qualification != null">QUALIFICATION = #{ qualification,jdbcType=VARCHAR}</if>
+		</set>
+		WHERE
+		ROW_ID = #{ rowId,jdbcType=INTEGER}
+	</update>
+	
+	<!--批量更新 -->
+	<update id="updates" parameterType="java.util.List">
+		<foreach collection="records" item="item" index="index" open="" close="" separator=";">	
+			UPDATE HR_O_POST 
+			<set>
+			<if test="item.sortNbr != null">SORT_NBR = #{item.sortNbr,jdbcType=INTEGER},</if>
+			<if test="item.status != null">STATUS = #{item.status,jdbcType=CHAR},</if>
+			<if test="item.originFlag != null">ORIGIN_FLAG = #{item.originFlag,jdbcType=CHAR},</if>
+			<if test="item.originApp != null">ORIGIN_APP = #{item.originApp,jdbcType=VARCHAR},</if>
+			<if test="item.notes != null">NOTES = #{item.notes,jdbcType=VARCHAR},</if>
+			<if test="item.deptId != null">DEPT_ID = #{item.deptId,jdbcType=INTEGER},</if>
+			<if test="item.duty != null">DUTY = #{item.duty,jdbcType=VARCHAR},</if>
+			<if test="item.jobTitle != null">JOB_TITLE = #{item.jobTitle,jdbcType=VARCHAR},</if>
+			<if test="item.dutyLvl != null">DUTY_LVL = #{item.dutyLvl,jdbcType=VARCHAR},</if>
+			<if test="item.qualification != null">QUALIFICATION = #{item.qualification,jdbcType=VARCHAR}</if>
+			</set>
+			WHERE
+			ROW_ID = #{item.rowId,jdbcType=INTEGER}	
+		</foreach>
+	</update>
+	
+	<!--单条删除 -->
+	<update id="delete" >
+		UPDATE  HR_O_POST
+		SET
+		DELETED_FLAG =  '1'
+		WHERE 
+		ROW_ID = #{ rowId,jdbcType=INTEGER}
+	</update>
+	
+	<!--批量删除 -->
+	<update id="deletes" >
+		<foreach item="item" index="index" collection="ids" open=""  close="" separator=";">
+		 UPDATE  HR_O_POST
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE 
+		 ROW_ID =#{item}
+        </foreach>	
+	</update>
+	
+	<!--根据条件批量删除 -->
+	<update id="deletesByCon" parameterType="java.util.List" >
+		<foreach item="item" index="index" collection="records" open=""  close="" separator=";">
+		 UPDATE  HR_O_POST
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE DELETED_FLAG  =  '0' 
+		 AND FARM_ID=#{ farmId,jdbcType=INTEGER}
+		 AND ${item.RECORD_CON} = #{item.RECORD_VALUES}
+		 </foreach>	
+	</update>
+	
+	<!--根据条件批量删除 -->
+	<update id="deletesByCons" parameterType="java.util.List" >
+		<foreach item="item" index="index" collection="records" open=""  close="" separator=";">
+		 UPDATE  HR_O_POST
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE DELETED_FLAG  =  '0' ${item}
+		</foreach>	
+	</update>
+	
+	<!--查询List记录 -->
+	<select id="searchToList" resultMap="PostResult">
+		SELECT 
+		<include refid="PostModel_Column_List" />
+		FROM HR_O_POST WHERE DELETED_FLAG='0' 
+		AND FARM_ID=#{ farmId,jdbcType=INTEGER}
+	</select>
+	
+	<!--查询根据主键查单条记录 -->
+	<select id="searchById" resultMap="PostResult" >
+		SELECT 
+		<include refid="PostModel_Column_List" />
+		FROM HR_O_POST WHERE DELETED_FLAG='0'  AND
+		ROW_ID = #{ rowId,jdbcType=INTEGER}
+	</select>
+	
+	<!--根据条件查询有效数据 --><!-- {condition} -->
+	<select id="searchListByCon" resultMap="PostResult" >
+		SELECT 
+		<include refid="PostModel_Column_List" />
+		FROM HR_O_POST
+		WHERE DELETED_FLAG='0'  ${condition} 
+	</select>
+	
+	<!--根据条件查询全部数据 --><!-- {condition} -->
+	<select id="searchAllListByCon" resultMap="PostResult" >
+		SELECT 
+		<include refid="PostModel_Column_List" />
+		FROM HR_O_POST
+		WHERE ${condition}
+	</select>
+	
+	<!--根据条件查询全部数据 --><!-- {condition} -->
+	<select id="searchAll" resultMap="PostResult" >
+		SELECT *
+		FROM HR_O_POST
+		WHERE ${condition}
+	</select>
+	
+	<!-- 直接sql操作 -->
+	<select id="operSql" resultMap="PostResult"> ${sql} </select>
+
+</mapper>
+

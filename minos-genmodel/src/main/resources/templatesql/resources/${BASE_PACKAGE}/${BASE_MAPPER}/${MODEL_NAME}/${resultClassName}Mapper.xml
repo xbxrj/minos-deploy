@@ -1,0 +1,25 @@
+<#assign className = sql.resultClassName>
+<#assign classNameFirstLower = sql.resultClassName?uncap_first>   
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<#macro mapperEl value type>${ r"#{" } ${ value },jdbcType=${ type }}</#macro>
+<#macro idsEl value>${r"#{"}${ value }}</#macro>
+<#macro insertsEl value type>${r"#{item."}${value},jdbcType=${type}}</#macro>
+<#macro namespace>${sql.resultClassName}.</#macro>
+
+<mapper namespace="${basepackage}.${baseMapper}.${modelName}.${className}Mapper">
+
+	<resultMap id="${className}Result"  type="${className}View" >
+		<#list sql.columns as column>
+		<result property="${column.columnNameLower}" column="${column.sqlName}" jdbcType="${column.jdbcType}" />
+		</#list>
+	</resultMap>
+
+	 <select id="${sql.operation}" resultMap="${className}Result" >
+	 <![CDATA[
+	 ${sql.mybatisSql}
+	 ]]>
+	 </select>               
+
+</mapper>
+

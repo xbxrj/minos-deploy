@@ -1,0 +1,171 @@
+<#assign className = table.className>
+<#assign classNameFirstLower = table.classNameFirstLower>   
+<#assign tableSqlName = table.sqlName ?upper_case>   
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<#macro mapperEl value type>${ r"#{" } ${ value },jdbcType=${ type }}</#macro>
+<#macro idsEl value>${r"#{"}${ value }}</#macro>
+<#macro insertsEl value type>${r"#{item."}${value},jdbcType=${type}}</#macro>
+<#macro namespace>${className}.</#macro>
+
+<mapper namespace="${basePackage}.${baseMapper}.${modelName}.${className}Mapper">
+
+	<resultMap id="${className}Result"  type="${className}Model" >
+		<#list table.columns as column>
+		<result property="${column.columnNameLower}" column="${column.sqlName}" jdbcType="${column.jdbcType}" />
+		</#list>
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="${className}Model_Column_List">
+		<#list table.columns as column><#if column.columnNameLower != 'farmId' && column.columnNameLower != 'companyId' && column.columnNameLower != 'deletedFlag' && column.columnNameLower != 'originFlag' && column.columnNameLower != 'originApp' && column.columnNameLower != 'status' >${column.sqlName}<#if column_has_next>,</#if></#if></#list>
+	</sql>
+
+	<!-- 单条新增 -->
+	<insert id="insert" useGeneratedKeys="true"  <#list table.pkColumns as column><#if table.pkCount==1 && column.simpleJavaType=="Integer"> keyProperty="${column.columnNameFirstLower}"</#if></#list> parameterType="${className}Model">
+		INSERT INTO ${tableSqlName}
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<#list table.notPkColumns as column>
+			${column.sqlName}<#if column_has_next>,</#if>
+			</#list>
+		</trim>
+		VALUES
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<#list table.notPkColumns as column>
+			<@mapperEl column.columnNameFirstLower column.jdbcType/><#if column_has_next>,</#if>
+			</#list>
+		</trim>
+	</insert>
+	
+	<!-- 批量新增 -->
+	<insert id="inserts" parameterType="java.util.List">
+		INSERT INTO ${tableSqlName}
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<#list table.notPkColumns as column>
+			${column.sqlName} <#if column_has_next>,</#if>
+			</#list>
+		</trim>
+		VALUES
+		<foreach collection="records" item="item" index="index"  separator="," >	
+			<trim prefix="(" suffix=")" suffixOverrides=",">		
+				<#list table.notPkColumns as column>
+				<@insertsEl column.columnNameFirstLower column.jdbcType/><#if column_has_next>,</#if>
+				</#list>
+			</trim>
+		</foreach>			
+	</insert>
+	
+	<!--单条更新 -->
+	<update id="update" parameterType="${className}Model" >
+		UPDATE ${tableSqlName} 
+		<set>
+		<#list table.notPkColumns as column>
+		<#if column.columnNameLower != 'farmId' && column.columnNameLower != 'companyId' && column.columnNameLower != 'deletedFlag' >
+		<if test="${column.columnNameFirstLower} != null">${column.sqlName} = <@mapperEl column.columnNameFirstLower column.jdbcType/><#if column_has_next>,</#if></if>
+		</#if>
+		</#list>
+		</set>
+		WHERE
+		<#list table.compositeIdColumns as column>${column.sqlName} = <@mapperEl column.columnNameLower column.jdbcType/><#if column_has_next>AND</#if></#list>
+	</update>
+	
+	<!--批量更新 -->
+	<update id="updates" parameterType="java.util.List">
+		<foreach collection="records" item="item" index="index" open="" close="" separator=";">	
+			UPDATE ${tableSqlName} 
+			<set>
+			<#list table.notPkColumns as column>
+			<#if column.columnNameLower != 'farmId' && column.columnNameLower != 'companyId' && column.columnNameLower != 'deletedFlag' >
+			<if test="item.${column.columnNameFirstLower} != null">${column.sqlName} = <@insertsEl column.columnNameFirstLower column.jdbcType/><#if column_has_next>,</#if></if>
+			</#if>
+			</#list>
+			</set>
+			WHERE
+			<#list table.compositeIdColumns as column>${column.sqlName} = <@insertsEl column.columnNameLower column.jdbcType/><#if column_has_next>AND</#if></#list>	
+		</foreach>
+	</update>
+	
+	<!--单条删除 -->
+	<update id="delete" >
+		UPDATE  ${tableSqlName}
+		SET
+		DELETED_FLAG =  '1'
+		WHERE 
+		<#list table.pkColumns as column>${column.sqlName} = <@mapperEl column.columnNameLower column.jdbcType/><#if column_has_next>,</#if></#list>
+	</update>
+	
+	<!--批量删除 -->
+	<update id="deletes" >
+		<foreach item="item" index="index" collection="ids" open=""  close="" separator=";">
+		 UPDATE  ${tableSqlName}
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE 
+		 <#list table.pkColumns as column><#if table.pkCount==1>${column.sqlName} =<@idsEl 'item'/><#else>
+		 ${column.sqlName} =<@idsEl 'item.${column.columnNameLower}'/></#if><#if column_has_next>AND</#if></#list>
+        </foreach>	
+	</update>
+	
+	<!--根据条件批量删除 -->
+	<update id="deletesByCon" parameterType="java.util.List" >
+		<foreach item="item" index="index" collection="records" open=""  close="" separator=";">
+		 UPDATE  ${tableSqlName}
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE DELETED_FLAG  =  '0' 
+		 <#list table.notPkColumns as column><#if column.columnNameLower == 'farmId'>AND FARM_ID=<@mapperEl column.columnNameLower column.jdbcType/></#if></#list>
+		 AND <@jspEl 'item.RECORD_CON'/> = <@idsEl 'item.RECORD_VALUES'/>
+		 </foreach>	
+	</update>
+	
+	<!--根据条件批量删除 -->
+	<update id="deletesByCons" parameterType="java.util.List" >
+		<foreach item="item" index="index" collection="records" open=""  close="" separator=";">
+		 UPDATE  ${tableSqlName}
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE DELETED_FLAG  =  '0' <@jspEl 'item'/>
+		</foreach>	
+	</update>
+	
+	<!--查询List记录 -->
+	<select id="searchToList" resultMap="${className}Result">
+		SELECT 
+		<include refid="${className}Model_Column_List" />
+		FROM ${tableSqlName} WHERE DELETED_FLAG='0' 
+		<#list table.notPkColumns as column><#if column.columnNameLower == 'farmId'>AND FARM_ID=<@mapperEl column.columnNameLower column.jdbcType/></#if></#list>
+	</select>
+	
+	<!--查询根据主键查单条记录 -->
+	<select id="searchById" resultMap="${className}Result" >
+		SELECT 
+		<include refid="${className}Model_Column_List" />
+		FROM ${tableSqlName} WHERE DELETED_FLAG='0'  AND
+		<#list table.compositeIdColumns as column>${column.sqlName} = <@mapperEl column.columnNameLower column.jdbcType/><#if column_has_next>,</#if></#list>
+	</select>
+	
+	<!--根据条件查询有效数据 --><!-- {condition} -->
+	<select id="searchListByCon" resultMap="${className}Result" >
+		SELECT 
+		<include refid="${className}Model_Column_List" />
+		FROM ${tableSqlName}
+		WHERE DELETED_FLAG='0'  <@jspEl 'condition'/> 
+	</select>
+	
+	<!--根据条件查询全部数据 --><!-- {condition} -->
+	<select id="searchAllListByCon" resultMap="${className}Result" >
+		SELECT 
+		<include refid="${className}Model_Column_List" />
+		FROM ${tableSqlName}
+		WHERE <@jspEl 'condition'/>
+	</select>
+	
+	<!--根据条件查询全部数据 --><!-- {condition} -->
+	<select id="searchAll" resultMap="${className}Result" >
+		SELECT *
+		FROM ${tableSqlName}
+		WHERE <@jspEl 'condition'/>
+	</select>
+	
+	<!-- 直接sql操作 -->
+	<select id="operSql" resultMap="${className}Result"> <@jspEl 'sql'/> </select>
+
+</mapper>
+

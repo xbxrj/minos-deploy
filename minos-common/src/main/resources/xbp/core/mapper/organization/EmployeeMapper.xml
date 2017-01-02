@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="xbp.core.mapper.organization.EmployeeMapper">
+
+	<resultMap id="EmployeeResult"  type="EmployeeModel" >
+		<result property="rowId" column="ROW_ID" jdbcType="INTEGER" />
+		<result property="sortNbr" column="SORT_NBR" jdbcType="INTEGER" />
+		<result property="status" column="STATUS" jdbcType="CHAR" />
+		<result property="deletedFlag" column="DELETED_FLAG" jdbcType="CHAR" />
+		<result property="originFlag" column="ORIGIN_FLAG" jdbcType="CHAR" />
+		<result property="originApp" column="ORIGIN_APP" jdbcType="VARCHAR" />
+		<result property="notes" column="NOTES" jdbcType="VARCHAR" />
+		<result property="farmId" column="FARM_ID" jdbcType="INTEGER" />
+		<result property="companyId" column="COMPANY_ID" jdbcType="INTEGER" />
+		<result property="employeeCode" column="EMPLOYEE_CODE" jdbcType="VARCHAR" />
+		<result property="employeeName" column="EMPLOYEE_NAME" jdbcType="VARCHAR" />
+		<result property="employeeEnNm" column="EMPLOYEE_EN_NM" jdbcType="VARCHAR" />
+		<result property="sex" column="SEX" jdbcType="VARCHAR" />
+		<result property="cardType" column="CARD_TYPE" jdbcType="VARCHAR" />
+		<result property="idcard" column="IDCARD" jdbcType="VARCHAR" />
+		<result property="birthday" column="BIRTHDAY" jdbcType="DATE" />
+		<result property="marryCd" column="MARRY_CD" jdbcType="VARCHAR" />
+		<result property="pcode" column="PCODE" jdbcType="VARCHAR" />
+		<result property="nationality" column="NATIONALITY" jdbcType="VARCHAR" />
+		<result property="edubg" column="EDUBG" jdbcType="VARCHAR" />
+		<result property="degree" column="DEGREE" jdbcType="VARCHAR" />
+		<result property="pedubg" column="P_EDUBG" jdbcType="VARCHAR" />
+		<result property="pdegree" column="P_DEGREE" jdbcType="VARCHAR" />
+		<result property="qlfs" column="QLFS" jdbcType="VARCHAR" />
+		<result property="priCntct" column="PRI_CNTCT" jdbcType="VARCHAR" />
+		<result property="entryDate" column="ENTRY_DATE" jdbcType="DATE" />
+		<result property="workDate" column="WORK_DATE" jdbcType="DATE" />
+		<result property="fax" column="FAX" jdbcType="VARCHAR" />
+		<result property="tel" column="TEL" jdbcType="VARCHAR" />
+		<result property="mobile" column="MOBILE" jdbcType="VARCHAR" />
+		<result property="postcode" column="POSTCODE" jdbcType="VARCHAR" />
+		<result property="email" column="E_MAIL" jdbcType="VARCHAR" />
+		<result property="qq" column="QQ" jdbcType="VARCHAR" />
+		<result property="wechat" column="WECHAT" jdbcType="VARCHAR" />
+		<result property="employeeType" column="EMPLOYEE_TYPE" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="EmployeeModel_Column_List">
+		ROW_ID,SORT_NBR,NOTES,EMPLOYEE_CODE,EMPLOYEE_NAME,EMPLOYEE_EN_NM,SEX,CARD_TYPE,IDCARD,BIRTHDAY,MARRY_CD,PCODE,NATIONALITY,EDUBG,DEGREE,P_EDUBG,P_DEGREE,QLFS,PRI_CNTCT,ENTRY_DATE,WORK_DATE,FAX,TEL,MOBILE,POSTCODE,E_MAIL,QQ,WECHAT,EMPLOYEE_TYPE
+	</sql>
+
+	<!-- 单条新增 -->
+	<insert id="insert" useGeneratedKeys="true"   keyProperty="rowId" parameterType="EmployeeModel">
+		INSERT INTO HR_O_EMPLOYEE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			SORT_NBR,
+			STATUS,
+			DELETED_FLAG,
+			ORIGIN_FLAG,
+			ORIGIN_APP,
+			NOTES,
+			FARM_ID,
+			COMPANY_ID,
+			EMPLOYEE_CODE,
+			EMPLOYEE_NAME,
+			EMPLOYEE_EN_NM,
+			SEX,
+			CARD_TYPE,
+			IDCARD,
+			BIRTHDAY,
+			MARRY_CD,
+			PCODE,
+			NATIONALITY,
+			EDUBG,
+			DEGREE,
+			P_EDUBG,
+			P_DEGREE,
+			QLFS,
+			PRI_CNTCT,
+			ENTRY_DATE,
+			WORK_DATE,
+			FAX,
+			TEL,
+			MOBILE,
+			POSTCODE,
+			E_MAIL,
+			QQ,
+			WECHAT,
+			EMPLOYEE_TYPE
+		</trim>
+		VALUES
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{ sortNbr,jdbcType=INTEGER},
+			#{ status,jdbcType=CHAR},
+			#{ deletedFlag,jdbcType=CHAR},
+			#{ originFlag,jdbcType=CHAR},
+			#{ originApp,jdbcType=VARCHAR},
+			#{ notes,jdbcType=VARCHAR},
+			#{ farmId,jdbcType=INTEGER},
+			#{ companyId,jdbcType=INTEGER},
+			#{ employeeCode,jdbcType=VARCHAR},
+			#{ employeeName,jdbcType=VARCHAR},
+			#{ employeeEnNm,jdbcType=VARCHAR},
+			#{ sex,jdbcType=VARCHAR},
+			#{ cardType,jdbcType=VARCHAR},
+			#{ idcard,jdbcType=VARCHAR},
+			#{ birthday,jdbcType=DATE},
+			#{ marryCd,jdbcType=VARCHAR},
+			#{ pcode,jdbcType=VARCHAR},
+			#{ nationality,jdbcType=VARCHAR},
+			#{ edubg,jdbcType=VARCHAR},
+			#{ degree,jdbcType=VARCHAR},
+			#{ pedubg,jdbcType=VARCHAR},
+			#{ pdegree,jdbcType=VARCHAR},
+			#{ qlfs,jdbcType=VARCHAR},
+			#{ priCntct,jdbcType=VARCHAR},
+			#{ entryDate,jdbcType=DATE},
+			#{ workDate,jdbcType=DATE},
+			#{ fax,jdbcType=VARCHAR},
+			#{ tel,jdbcType=VARCHAR},
+			#{ mobile,jdbcType=VARCHAR},
+			#{ postcode,jdbcType=VARCHAR},
+			#{ email,jdbcType=VARCHAR},
+			#{ qq,jdbcType=VARCHAR},
+			#{ wechat,jdbcType=VARCHAR},
+			#{ employeeType,jdbcType=VARCHAR}
+		</trim>
+	</insert>
+	
+	<!-- 批量新增 -->
+	<insert id="inserts" parameterType="java.util.List">
+		INSERT INTO HR_O_EMPLOYEE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			SORT_NBR ,
+			STATUS ,
+			DELETED_FLAG ,
+			ORIGIN_FLAG ,
+			ORIGIN_APP ,
+			NOTES ,
+			FARM_ID ,
+			COMPANY_ID ,
+			EMPLOYEE_CODE ,
+			EMPLOYEE_NAME ,
+			EMPLOYEE_EN_NM ,
+			SEX ,
+			CARD_TYPE ,
+			IDCARD ,
+			BIRTHDAY ,
+			MARRY_CD ,
+			PCODE ,
+			NATIONALITY ,
+			EDUBG ,
+			DEGREE ,
+			P_EDUBG ,
+			P_DEGREE ,
+			QLFS ,
+			PRI_CNTCT ,
+			ENTRY_DATE ,
+			WORK_DATE ,
+			FAX ,
+			TEL ,
+			MOBILE ,
+			POSTCODE ,
+			E_MAIL ,
+			QQ ,
+			WECHAT ,
+			EMPLOYEE_TYPE 
+		</trim>
+		VALUES
+		<foreach collection="records" item="item" index="index"  separator="," >	
+			<trim prefix="(" suffix=")" suffixOverrides=",">		
+				#{item.sortNbr,jdbcType=INTEGER},
+				#{item.status,jdbcType=CHAR},
+				#{item.deletedFlag,jdbcType=CHAR},
+				#{item.originFlag,jdbcType=CHAR},
+				#{item.originApp,jdbcType=VARCHAR},
+				#{item.notes,jdbcType=VARCHAR},
+				#{item.farmId,jdbcType=INTEGER},
+				#{item.companyId,jdbcType=INTEGER},
+				#{item.employeeCode,jdbcType=VARCHAR},
+				#{item.employeeName,jdbcType=VARCHAR},
+				#{item.employeeEnNm,jdbcType=VARCHAR},
+				#{item.sex,jdbcType=VARCHAR},
+				#{item.cardType,jdbcType=VARCHAR},
+				#{item.idcard,jdbcType=VARCHAR},
+				#{item.birthday,jdbcType=DATE},
+				#{item.marryCd,jdbcType=VARCHAR},
+				#{item.pcode,jdbcType=VARCHAR},
+				#{item.nationality,jdbcType=VARCHAR},
+				#{item.edubg,jdbcType=VARCHAR},
+				#{item.degree,jdbcType=VARCHAR},
+				#{item.pedubg,jdbcType=VARCHAR},
+				#{item.pdegree,jdbcType=VARCHAR},
+				#{item.qlfs,jdbcType=VARCHAR},
+				#{item.priCntct,jdbcType=VARCHAR},
+				#{item.entryDate,jdbcType=DATE},
+				#{item.workDate,jdbcType=DATE},
+				#{item.fax,jdbcType=VARCHAR},
+				#{item.tel,jdbcType=VARCHAR},
+				#{item.mobile,jdbcType=VARCHAR},
+				#{item.postcode,jdbcType=VARCHAR},
+				#{item.email,jdbcType=VARCHAR},
+				#{item.qq,jdbcType=VARCHAR},
+				#{item.wechat,jdbcType=VARCHAR},
+				#{item.employeeType,jdbcType=VARCHAR}
+			</trim>
+		</foreach>			
+	</insert>
+	
+	<!--单条更新 -->
+	<update id="update" parameterType="EmployeeModel" >
+		UPDATE HR_O_EMPLOYEE 
+		<set>
+		<if test="sortNbr != null">SORT_NBR = #{ sortNbr,jdbcType=INTEGER},</if>
+		<if test="status != null">STATUS = #{ status,jdbcType=CHAR},</if>
+		<if test="originFlag != null">ORIGIN_FLAG = #{ originFlag,jdbcType=CHAR},</if>
+		<if test="originApp != null">ORIGIN_APP = #{ originApp,jdbcType=VARCHAR},</if>
+		<if test="notes != null">NOTES = #{ notes,jdbcType=VARCHAR},</if>
+		<if test="employeeCode != null">EMPLOYEE_CODE = #{ employeeCode,jdbcType=VARCHAR},</if>
+		<if test="employeeName != null">EMPLOYEE_NAME = #{ employeeName,jdbcType=VARCHAR},</if>
+		<if test="employeeEnNm != null">EMPLOYEE_EN_NM = #{ employeeEnNm,jdbcType=VARCHAR},</if>
+		<if test="sex != null">SEX = #{ sex,jdbcType=VARCHAR},</if>
+		<if test="cardType != null">CARD_TYPE = #{ cardType,jdbcType=VARCHAR},</if>
+		<if test="idcard != null">IDCARD = #{ idcard,jdbcType=VARCHAR},</if>
+		<if test="birthday != null">BIRTHDAY = #{ birthday,jdbcType=DATE},</if>
+		<if test="marryCd != null">MARRY_CD = #{ marryCd,jdbcType=VARCHAR},</if>
+		<if test="pcode != null">PCODE = #{ pcode,jdbcType=VARCHAR},</if>
+		<if test="nationality != null">NATIONALITY = #{ nationality,jdbcType=VARCHAR},</if>
+		<if test="edubg != null">EDUBG = #{ edubg,jdbcType=VARCHAR},</if>
+		<if test="degree != null">DEGREE = #{ degree,jdbcType=VARCHAR},</if>
+		<if test="pedubg != null">P_EDUBG = #{ pedubg,jdbcType=VARCHAR},</if>
+		<if test="pdegree != null">P_DEGREE = #{ pdegree,jdbcType=VARCHAR},</if>
+		<if test="qlfs != null">QLFS = #{ qlfs,jdbcType=VARCHAR},</if>
+		<if test="priCntct != null">PRI_CNTCT = #{ priCntct,jdbcType=VARCHAR},</if>
+		<if test="entryDate != null">ENTRY_DATE = #{ entryDate,jdbcType=DATE},</if>
+		<if test="workDate != null">WORK_DATE = #{ workDate,jdbcType=DATE},</if>
+		<if test="fax != null">FAX = #{ fax,jdbcType=VARCHAR},</if>
+		<if test="tel != null">TEL = #{ tel,jdbcType=VARCHAR},</if>
+		<if test="mobile != null">MOBILE = #{ mobile,jdbcType=VARCHAR},</if>
+		<if test="postcode != null">POSTCODE = #{ postcode,jdbcType=VARCHAR},</if>
+		<if test="email != null">E_MAIL = #{ email,jdbcType=VARCHAR},</if>
+		<if test="qq != null">QQ = #{ qq,jdbcType=VARCHAR},</if>
+		<if test="wechat != null">WECHAT = #{ wechat,jdbcType=VARCHAR},</if>
+		<if test="employeeType != null">EMPLOYEE_TYPE = #{ employeeType,jdbcType=VARCHAR}</if>
+		</set>
+		WHERE
+		ROW_ID = #{ rowId,jdbcType=INTEGER}
+	</update>
+	
+	<!--批量更新 -->
+	<update id="updates" parameterType="java.util.List">
+		<foreach collection="records" item="item" index="index" open="" close="" separator=";">	
+			UPDATE HR_O_EMPLOYEE 
+			<set>
+			<if test="item.sortNbr != null">SORT_NBR = #{item.sortNbr,jdbcType=INTEGER},</if>
+			<if test="item.status != null">STATUS = #{item.status,jdbcType=CHAR},</if>
+			<if test="item.originFlag != null">ORIGIN_FLAG = #{item.originFlag,jdbcType=CHAR},</if>
+			<if test="item.originApp != null">ORIGIN_APP = #{item.originApp,jdbcType=VARCHAR},</if>
+			<if test="item.notes != null">NOTES = #{item.notes,jdbcType=VARCHAR},</if>
+			<if test="item.employeeCode != null">EMPLOYEE_CODE = #{item.employeeCode,jdbcType=VARCHAR},</if>
+			<if test="item.employeeName != null">EMPLOYEE_NAME = #{item.employeeName,jdbcType=VARCHAR},</if>
+			<if test="item.employeeEnNm != null">EMPLOYEE_EN_NM = #{item.employeeEnNm,jdbcType=VARCHAR},</if>
+			<if test="item.sex != null">SEX = #{item.sex,jdbcType=VARCHAR},</if>
+			<if test="item.cardType != null">CARD_TYPE = #{item.cardType,jdbcType=VARCHAR},</if>
+			<if test="item.idcard != null">IDCARD = #{item.idcard,jdbcType=VARCHAR},</if>
+			<if test="item.birthday != null">BIRTHDAY = #{item.birthday,jdbcType=DATE},</if>
+			<if test="item.marryCd != null">MARRY_CD = #{item.marryCd,jdbcType=VARCHAR},</if>
+			<if test="item.pcode != null">PCODE = #{item.pcode,jdbcType=VARCHAR},</if>
+			<if test="item.nationality != null">NATIONALITY = #{item.nationality,jdbcType=VARCHAR},</if>
+			<if test="item.edubg != null">EDUBG = #{item.edubg,jdbcType=VARCHAR},</if>
+			<if test="item.degree != null">DEGREE = #{item.degree,jdbcType=VARCHAR},</if>
+			<if test="item.pedubg != null">P_EDUBG = #{item.pedubg,jdbcType=VARCHAR},</if>
+			<if test="item.pdegree != null">P_DEGREE = #{item.pdegree,jdbcType=VARCHAR},</if>
+			<if test="item.qlfs != null">QLFS = #{item.qlfs,jdbcType=VARCHAR},</if>
+			<if test="item.priCntct != null">PRI_CNTCT = #{item.priCntct,jdbcType=VARCHAR},</if>
+			<if test="item.entryDate != null">ENTRY_DATE = #{item.entryDate,jdbcType=DATE},</if>
+			<if test="item.workDate != null">WORK_DATE = #{item.workDate,jdbcType=DATE},</if>
+			<if test="item.fax != null">FAX = #{item.fax,jdbcType=VARCHAR},</if>
+			<if test="item.tel != null">TEL = #{item.tel,jdbcType=VARCHAR},</if>
+			<if test="item.mobile != null">MOBILE = #{item.mobile,jdbcType=VARCHAR},</if>
+			<if test="item.postcode != null">POSTCODE = #{item.postcode,jdbcType=VARCHAR},</if>
+			<if test="item.email != null">E_MAIL = #{item.email,jdbcType=VARCHAR},</if>
+			<if test="item.qq != null">QQ = #{item.qq,jdbcType=VARCHAR},</if>
+			<if test="item.wechat != null">WECHAT = #{item.wechat,jdbcType=VARCHAR},</if>
+			<if test="item.employeeType != null">EMPLOYEE_TYPE = #{item.employeeType,jdbcType=VARCHAR}</if>
+			</set>
+			WHERE
+			ROW_ID = #{item.rowId,jdbcType=INTEGER}	
+		</foreach>
+	</update>
+	
+	<!--单条删除 -->
+	<update id="delete" >
+		UPDATE  HR_O_EMPLOYEE
+		SET
+		DELETED_FLAG =  '1'
+		WHERE 
+		ROW_ID = #{ rowId,jdbcType=INTEGER}
+	</update>
+	
+	<!--批量删除 -->
+	<update id="deletes" >
+		<foreach item="item" index="index" collection="ids" open=""  close="" separator=";">
+		 UPDATE  HR_O_EMPLOYEE
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE 
+		 ROW_ID =#{item}
+        </foreach>	
+	</update>
+	
+	<!--根据条件批量删除 -->
+	<update id="deletesByCon" parameterType="java.util.List" >
+		<foreach item="item" index="index" collection="records" open=""  close="" separator=";">
+		 UPDATE  HR_O_EMPLOYEE
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE DELETED_FLAG  =  '0' 
+		 AND FARM_ID=#{ farmId,jdbcType=INTEGER}
+		 AND ${item.RECORD_CON} = #{item.RECORD_VALUES}
+		 </foreach>	
+	</update>
+	
+	<!--根据条件批量删除 -->
+	<update id="deletesByCons" parameterType="java.util.List" >
+		<foreach item="item" index="index" collection="records" open=""  close="" separator=";">
+		 UPDATE  HR_O_EMPLOYEE
+		 SET
+		 DELETED_FLAG  =  '1'  WHERE DELETED_FLAG  =  '0' ${item}
+		</foreach>	
+	</update>
+	
+	<!--查询List记录 -->
+	<select id="searchToList" resultMap="EmployeeResult">
+		SELECT 
+		<include refid="EmployeeModel_Column_List" />
+		FROM HR_O_EMPLOYEE WHERE DELETED_FLAG='0' 
+		AND FARM_ID=#{ farmId,jdbcType=INTEGER}
+	</select>
+	
+	<!--查询根据主键查单条记录 -->
+	<select id="searchById" resultMap="EmployeeResult" >
+		SELECT 
+		<include refid="EmployeeModel_Column_List" />
+		FROM HR_O_EMPLOYEE WHERE DELETED_FLAG='0'  AND
+		ROW_ID = #{ rowId,jdbcType=INTEGER}
+	</select>
+	
+	<!--根据条件查询有效数据 --><!-- {condition} -->
+	<select id="searchListByCon" resultMap="EmployeeResult" >
+		SELECT 
+		<include refid="EmployeeModel_Column_List" />
+		FROM HR_O_EMPLOYEE
+		WHERE DELETED_FLAG='0'  ${condition} 
+	</select>
+	
+	<!--根据条件查询全部数据 --><!-- {condition} -->
+	<select id="searchAllListByCon" resultMap="EmployeeResult" >
+		SELECT 
+		<include refid="EmployeeModel_Column_List" />
+		FROM HR_O_EMPLOYEE
+		WHERE ${condition}
+	</select>
+	
+	<!--根据条件查询全部数据 --><!-- {condition} -->
+	<select id="searchAll" resultMap="EmployeeResult" >
+		SELECT *
+		FROM HR_O_EMPLOYEE
+		WHERE ${condition}
+	</select>
+	
+	<!-- 直接sql操作 -->
+	<select id="operSql" resultMap="EmployeeResult"> ${sql} </select>
+
+</mapper>
+
